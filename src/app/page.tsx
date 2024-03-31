@@ -94,7 +94,9 @@ export default function Home() {
     <>
       <section className="w-full flex justify-center flex-col items-center pt-[10%]">
         <section>
-          <h1 className="text-7xl font-bold text-white">Task Manager</h1>
+          <h1 className="text-7xl font-bold text-white text-center">
+            Task Manager
+          </h1>
           <section className="md:max-w-screen-md w-full  p-2 flex flex-col gap-1 mt-5">
             <Reorder.Group
               axis="y"
@@ -141,8 +143,15 @@ export default function Home() {
                       onFocus={() => {
                         handleToDoFocus(index);
                       }}
-                      className={`px-1 py-1 w-full h-auto  outline-none bg-[#1c1917] text-white  ${
-                        toDo.status && "line-through text-gray-500"
+                      className={`
+                      px-1 
+                      py-1 
+                      w-full
+                      h-auto  
+                      outline-none 
+                      bg-[#1c1917] 
+                      text-white  ${
+                        toDo.status && "line-through text-zinc-600"
                       }`}
                       onChange={(e) => {
                         handleUpdate({ e, index, setGroupOfToDoS });
