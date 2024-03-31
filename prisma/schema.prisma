@@ -1,0 +1,44 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("NEXT_PUBLIC_DB_URI")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model UserAccessCredentials {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  email     String    @unique
+  password  String
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String    @db.ObjectId
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model ToDo {
+  toDoId String  @id @map("_id")
+  name   String
+  status Boolean
+  label  String?
+  user   User    @relation(fields: [userId], references: [id])
+  userId String  @db.ObjectId
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model User {
+  id                    String                  @id @default(auto()) @map("_id") @db.ObjectId
+  name                  String
+  familyName            String
+  UserAccessCredentials UserAccessCredentials[]
+  ToDos                 ToDo[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
