@@ -6,20 +6,26 @@ import {
   saveToDoSInLocalStorage,
   getToDoSInLocalStorage,
 } from "@/utils/localstorage";
+import Menu from "@/components/menu/Menu";
+import { menuModalOpenAndClose } from "@/utils/checkKeyCommand/checkSlashMenu";
 export interface ToDo {
   name: string;
   toDoId: string;
   status: boolean;
   label?: string;
+  isMenuOpen: boolean;
 }
 
 export default function Home() {
   const [groupOfToDoS, setGroupOfToDoS] = useState<ToDo[]>([]);
   const groupOfToDoSRef = useRef<HTMLInputElement[]>([]);
   const [currentIndexPosition, setCurrentIndexPosition] = useState<number>(0);
+  const [relativeCursorPosition, setRelativeCursorPositon] = useState({
+    axisX: 0,
+    axisY: 0,
+  });
 
   useEffect(() => {
-    console.log("entrando");
     if (groupOfToDoS?.length === 0) {
       const addDefaultToDo: ToDo[] = groupOfToDoS.concat({
         name: "",
@@ -27,6 +33,7 @@ export default function Home() {
         status: false,
         label:
           "Escribe tu primer tarea y oprime la tecla Enter para la siguiente ;)",
+        isMenuOpen: false,
       });
       setGroupOfToDoS(addDefaultToDo);
     }
@@ -63,6 +70,7 @@ export default function Home() {
           toDoId: uuidv4(),
           status: false,
           label: ``,
+          isMenuOpen: false,
         };
         setGroupOfToDoS((prevState) => [...prevState, newToDo]);
         setTimeout(() => focusNextInputToDo(index), 0); // Esperar a que se actualice el estado antes de enfocar
@@ -73,6 +81,7 @@ export default function Home() {
           toDoId: uuidv4(),
           status: false,
           label: " ",
+          isMenuOpen: false,
         });
         setGroupOfToDoS(updatedGroupOfToDoS);
         setTimeout(() => focusNextInputToDo(index), 0);
@@ -112,6 +121,11 @@ export default function Home() {
 
   const handleUpdate = (e: ChangeEvent<HTMLInputElement>, index: number) => {
     const text = e.target.value;
+    const inputCursorPosition = e.target.selectionEnd ?? 0;
+    setRelativeCursorPositon((prev) => {
+      return { ...prev, axisX: inputCursorPosition };
+    });
+    searchKeyLetterInText(text, index);
     setGroupOfToDoS((prev) => {
       const newGroupOfToDos = [...prev];
 
@@ -165,6 +179,7 @@ export default function Home() {
   };
 
   const handleToDoBlur = (currentToDoIndex: number) => {
+    // handleCloseMenu(currentToDoIndex);
     setGroupOfToDoS((prev) => {
       const newGroupOfToDos = prev.map((toDo, index) => {
         return currentToDoIndex === index
@@ -179,6 +194,32 @@ export default function Home() {
     });
   };
 
+  const searchKeyLetterInText = (text: string, index: number) => {
+    let regex = /\/\s/;
+    if (text.includes("/"))
+      return !regex.test(text) ? handleOpenMenu(index) : handleCloseMenu(index);
+    handleCloseMenu(index);
+  };
+
+  const handleOpenMenu = (currentIndex: number) => {
+    setGroupOfToDoS((prevToDos) => {
+      const newToDos = prevToDos.map((toDo, index) => {
+        return index === currentIndex ? { ...toDo, isMenuOpen: true } : toDo;
+      });
+      return newToDos;
+    });
+  };
+
+  const handleCloseMenu = (currentIndex: number) => {
+    setGroupOfToDoS((prevToDos) => {
+      const newToDos = prevToDos.map((toDo, index) => {
+        return index === currentIndex ? { ...toDo, isMenuOpen: false } : toDo;
+      });
+      return newToDos;
+    });
+  };
+  console.log(relativeCursorPosition);
+
   return (
     <>
       <section className="w-full flex justify-center flex-col items-center pt-[10%]">
@@ -189,7 +230,7 @@ export default function Home() {
               groupOfToDoS.map((toDo, index) => (
                 <div
                   key={toDo.toDoId}
-                  className="flex items-center justify-start p-1 bg-#1c1917  rounded-md"
+                  className="flex items-center justify-start p-1 bg-#1c1917  rounded-md relative"
                 >
                   {
                     // <span>{index}.</span>
@@ -212,7 +253,7 @@ export default function Home() {
                     onFocus={() => {
                       handleToDoFocus(index);
                     }}
-                    className={`px-1 py-1 w-full h-auto  outline-none bg-[#1c1917] text-white  ${
+                    className={`px-1 py-1 w-full h-fit break-words  outline-none bg-[#1c1917] text-white  ${
                       toDo.status && "line-through text-gray-500"
                     }`}
                     onChange={(e) => {
@@ -226,6 +267,9 @@ export default function Home() {
                       if (ref) addRefToElements(ref, index);
                     }}
                   />
+                  {toDo.isMenuOpen && (
+                    <Menu axisx={relativeCursorPosition.axisX} />
+                  )}
                 </div>
               ))}
           </section>
