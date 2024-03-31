@@ -151,7 +151,7 @@ export default function Home() {
                       outline-none 
                       bg-[#1c1917] 
                       text-white  ${
-                        toDo.status && "line-through text-zinc-600"
+                        toDo.status && "line-through text-zinc-400"
                       }`}
                       onChange={(e) => {
                         handleUpdate({ e, index, setGroupOfToDoS });
