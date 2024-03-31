@@ -71,9 +71,8 @@ export const focusPreviousInputToDo = ({
   groupOfToDoSRef,
   index,
 }: FocusNextOrPrevInputToDo) => {
-  if (groupOfToDoSRef.current[index]) {
-    groupOfToDoSRef.current[index].focus();
-  }
+  if (groupOfToDoSRef.current[index])
+    return groupOfToDoSRef.current[index].focus();
 };
 
 interface handleDeleteKey {

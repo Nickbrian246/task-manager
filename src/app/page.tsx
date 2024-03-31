@@ -10,6 +10,7 @@ import { handleUpdate } from "@/utils/update-and-delete-to-do";
 import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { BiGridVertical } from "react-icons/bi";
+import { Reorder, useDragControls } from "framer-motion";
 
 export interface ToDo {
   name: string;
@@ -22,9 +23,9 @@ export default function Home() {
   const [groupOfToDoS, setGroupOfToDoS] = useState<ToDo[]>([]);
   const groupOfToDoSRef = useRef<HTMLInputElement[]>([]);
   const [currentIndexPosition, setCurrentIndexPosition] = useState<number>(0);
+  const controls = useDragControls();
 
   useEffect(() => {
-    console.log("entrando");
     if (groupOfToDoS?.length === 0) {
       const addDefaultToDo: ToDo[] = groupOfToDoS.concat({
         name: "",
@@ -95,68 +96,78 @@ export default function Home() {
         <section>
           <h1 className="text-7xl font-bold text-white">Task Manager</h1>
           <section className="md:max-w-screen-md w-full  p-2 flex flex-col gap-1 mt-5">
-            {groupOfToDoS &&
-              groupOfToDoS.map((toDo, index) => (
-                <div
-                  key={toDo.toDoId}
-                  className="flex items-center justify-start p-1 bg-#1c1917  rounded-md gap-3"
-                >
-                  <span className="text-[#525252] scale-125">
-                    <BiGridVertical />
-                  </span>
-                  {
-                    // <span>{index}.</span>
-                  }
-
-                  <input
-                    checked={toDo.status}
-                    onChange={() => {
-                      handleTaskStatus({ id: toDo.toDoId, setGroupOfToDoS });
-                    }}
-                    type="checkbox"
-                    className="scale-125 "
-                  />
-                  <input
-                    onKeyDown={(e) => {
-                      handleDeleteKey({
-                        e,
-                        groupOfToDoS,
-                        groupOfToDoSRef,
-                        index,
-                        setGroupOfToDoS,
-                      });
-                    }}
-                    onBlur={() => {
-                      handleToDoBlur(index);
-                    }}
-                    onFocus={() => {
-                      handleToDoFocus(index);
-                    }}
-                    className={`px-1 py-1 w-full h-auto  outline-none bg-[#1c1917] text-white  ${
-                      toDo.status && "line-through text-gray-500"
-                    }`}
-                    onChange={(e) => {
-                      handleUpdate({ e, index, setGroupOfToDoS });
-                    }}
+            <Reorder.Group
+              axis="y"
+              values={groupOfToDoS}
+              onReorder={setGroupOfToDoS}
+            >
+              {groupOfToDoS.map((toDo, index) => (
+                <Reorder.Item key={toDo.toDoId} value={toDo}>
+                  <div
                     key={toDo.toDoId}
-                    value={toDo.name}
-                    placeholder={toDo.label && toDo.label}
-                    onKeyUp={(e) =>
-                      handleEnterKey({
-                        e,
-                        currentIndexPosition,
-                        groupOfToDoS,
-                        groupOfToDoSRef,
-                        index,
-                        setGroupOfToDoS,
-                      })
+                    className="flex items-center justify-start p-1 bg-#1c1917  rounded-md gap-3"
+                  >
+                    <span
+                      onPointerDown={(e) => controls.start(e)}
+                      className="text-[#525252] scale-125"
+                    >
+                      <BiGridVertical />
+                    </span>
+                    {
+                      // <span>{index}.</span>
                     }
-                    ref={(ref) => {
-                      if (ref) addRefToElements(ref, index);
-                    }}
-                  />
-                </div>
+
+                    <input
+                      checked={toDo.status}
+                      onChange={() => {
+                        handleTaskStatus({ id: toDo.toDoId, setGroupOfToDoS });
+                      }}
+                      type="checkbox"
+                      className="scale-125 "
+                    />
+                    <input
+                      onKeyDown={(e) => {
+                        handleDeleteKey({
+                          e,
+                          groupOfToDoS,
+                          groupOfToDoSRef,
+                          index,
+                          setGroupOfToDoS,
+                        });
+                      }}
+                      onBlur={() => {
+                        handleToDoBlur(index);
+                      }}
+                      onFocus={() => {
+                        handleToDoFocus(index);
+                      }}
+                      className={`px-1 py-1 w-full h-auto  outline-none bg-[#1c1917] text-white  ${
+                        toDo.status && "line-through text-gray-500"
+                      }`}
+                      onChange={(e) => {
+                        handleUpdate({ e, index, setGroupOfToDoS });
+                      }}
+                      key={toDo.toDoId}
+                      value={toDo.name}
+                      placeholder={toDo.label && toDo.label}
+                      onKeyUp={(e) =>
+                        handleEnterKey({
+                          e,
+                          currentIndexPosition,
+                          groupOfToDoS,
+                          groupOfToDoSRef,
+                          index,
+                          setGroupOfToDoS,
+                        })
+                      }
+                      ref={(ref) => {
+                        if (ref) addRefToElements(ref, index);
+                      }}
+                    />
+                  </div>
+                </Reorder.Item>
               ))}
+            </Reorder.Group>
           </section>
         </section>
       </section>
