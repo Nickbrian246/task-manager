@@ -109,7 +109,7 @@ export default function Home() {
                   >
                     <span
                       onPointerDown={(e) => controls.start(e)}
-                      className="text-[#525252] scale-125"
+                      className="text-[#525252] scale-150 cursor-grabbing hover:text-[#e2e8f0] hover:bg-[#262626] rounded"
                     >
                       <BiGridVertical />
                     </span>
