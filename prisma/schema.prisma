@@ -1,0 +1,28 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("NEXT_PUBLIC_DB_URI")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  familyName String
+  email      String @unique
+  password   String
+  ToDos      ToDo[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+type ToDo {
+  toDoId String
+  name   String
+  status Boolean
+  label  String?
+}
