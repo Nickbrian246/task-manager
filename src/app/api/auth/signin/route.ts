@@ -18,5 +18,6 @@ export async function POST(req: NextRequest) {
     return Response.json({ message: "Incorrect Password" }, { status: 400 });
 
   const token = await signJwt({ email: user.email, userId: user.id });
+
   return NextResponse.json({ acessToken: token }, { status: 200 });
 }
