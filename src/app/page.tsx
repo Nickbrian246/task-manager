@@ -11,6 +11,9 @@ import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { BiGridVertical } from "react-icons/bi";
 import { Reorder, useDragControls } from "framer-motion";
+import Register from "@/components/auth/register";
+import Modal from "@/components/modal";
+import Login from "@/components/auth/login";
 
 export interface ToDo {
   name: string;
@@ -179,6 +182,11 @@ export default function Home() {
             </Reorder.Group>
           </section>
         </section>
+        {/* <Modal className="flex-col    ">
+          <div className="bg-[#1c1917] rounded-lg p-2 border border-[#9ca3af]">
+            <Login />
+          </div>
+        </Modal> */}
       </section>
     </>
   );
