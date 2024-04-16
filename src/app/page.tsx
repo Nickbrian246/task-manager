@@ -14,6 +14,8 @@ import { Reorder, useDragControls } from "framer-motion";
 import Register from "@/components/auth/register";
 import Modal from "@/components/modal";
 import Login from "@/components/auth/login";
+import Link from "next/link";
+import Header from "@/components/header/Header";
 
 export interface ToDo {
   name: string;
@@ -95,7 +97,8 @@ export default function Home() {
 
   return (
     <>
-      <section className="w-full flex justify-center flex-col items-center pt-[10%]">
+      <Header />
+      <section className="w-full flex justify-center flex-col items-center pt-[5%]">
         <section>
           <h1 className="text-7xl font-bold text-white text-center">
             Task Manager

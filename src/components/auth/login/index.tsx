@@ -1,7 +1,9 @@
+"use client";
 import { ChangeEvent, useState } from "react";
 import { FaEyeSlash } from "react-icons/fa";
 import { LuEye } from "react-icons/lu";
 import { inputList } from "./utils/inputList";
+import Link from "next/link";
 
 interface RegisterFormData {
   email: string;
@@ -26,7 +28,10 @@ export default function Login() {
     });
   };
   return (
-    <form className="flex flex-col p-7 max-w-3xl gap-4 " method="dialog">
+    <form
+      className="flex flex-col p-7 max-w-3xl rounded-md gap-4 border border-white bg-[#1c1917] "
+      method="dialog"
+    >
       <h2 className="text-4xl font-bold text-white text-center ">
         Iniciar sesion
       </h2>
@@ -65,6 +70,16 @@ export default function Login() {
       <button className="p-4 bg-slate-400 rounded-md text-white md:m-auto md:px-10">
         {" Iniciar sesión"}
       </button>
+      <nav className="flex gap-2 text-white">
+        ¿No tienes una cuenta?
+        <Link
+          className="underline text-white hover:text-slate-400"
+          href={"/register"}
+          replace={true}
+        >
+          Regístrate{" "}
+        </Link>
+      </nav>
     </form>
   );
 }

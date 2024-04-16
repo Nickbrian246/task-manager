@@ -1,9 +1,11 @@
+"use client";
 import React, { ChangeEvent, useState } from "react";
 import { inputList } from "./utils/inputList";
 import { PasswordRules } from "@/components/passwordRules/password-rules";
 import { useValidatePassword } from "@/hooks/useValidatePassword";
 import { FaEyeSlash } from "react-icons/fa";
 import { LuEye } from "react-icons/lu";
+import Link from "next/link";
 interface RegisterFormData {
   name: string;
   lastName: string;
@@ -43,7 +45,10 @@ export default function Register() {
     });
   };
   return (
-    <form className="flex flex-col p-7 max-w-3xl gap-2 " method="dialog">
+    <form
+      className="flex flex-col p-7 max-w-3xl gap-2 bg-[#1c1917]  border border-white rounded-md z-20  "
+      method="dialog"
+    >
       <h2 className="text-4xl font-bold text-white text-center ">Registrate</h2>
       {inputList.map((inputData) => (
         <div className="flex flex-col w-full" key={inputData.id}>
@@ -87,6 +92,16 @@ export default function Register() {
       <button className="p-4 bg-slate-400 rounded-md text-white md:m-auto md:px-10">
         Registrase
       </button>
+      <nav className="flex gap-2 text-white">
+        ¿No tienes una cuenta?
+        <Link
+          className="underline text-white hover:text-slate-400"
+          href={"/login"}
+          replace={true}
+        >
+          Iniciar sesión{" "}
+        </Link>
+      </nav>
     </form>
   );
 }
