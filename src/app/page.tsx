@@ -1,28 +1,18 @@
 "use client";
 
+import Header from "@/components/header/Header";
 import { handleDeleteKey, handleEnterKey } from "@/utils/key-actions";
 import {
   getToDoSInLocalStorage,
   saveToDoSInLocalStorage,
 } from "@/utils/localstorage";
-import { handleTaskStatus } from "@/utils/utils";
 import { handleUpdate } from "@/utils/update-and-delete-to-do";
-import { useEffect, useRef, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
-import { BiGridVertical } from "react-icons/bi";
+import { handleTaskStatus } from "@/utils/utils";
 import { Reorder, useDragControls } from "framer-motion";
-import Register from "@/components/auth/register";
-import Modal from "@/components/modal";
-import Login from "@/components/auth/login";
-import Link from "next/link";
-import Header from "@/components/header/Header";
-
-export interface ToDo {
-  name: string;
-  toDoId: string;
-  status: boolean;
-  label?: string;
-}
+import { useEffect, useRef, useState } from "react";
+import { BiGridVertical } from "react-icons/bi";
+import { v4 as uuidv4 } from "uuid";
+import { ToDo } from "@prisma/client";
 
 export default function Home() {
   const [groupOfToDoS, setGroupOfToDoS] = useState<ToDo[]>([]);
@@ -164,7 +154,7 @@ export default function Home() {
                       }}
                       key={toDo.toDoId}
                       value={toDo.name}
-                      placeholder={toDo.label && toDo.label}
+                      placeholder={toDo.label ?? ""}
                       onKeyUp={(e) =>
                         handleEnterKey({
                           e,
@@ -185,11 +175,6 @@ export default function Home() {
             </Reorder.Group>
           </section>
         </section>
-        {/* <Modal className="flex-col    ">
-          <div className="bg-[#1c1917] rounded-lg p-2 border border-[#9ca3af]">
-            <Login />
-          </div>
-        </Modal> */}
       </section>
     </>
   );

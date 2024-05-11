@@ -3,3 +3,8 @@ export interface InputList {
   label: string;
   id: string;
 }
+
+export interface AuthLogin {
+  email: string;
+  password: string;
+}

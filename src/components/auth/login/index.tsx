@@ -1,10 +1,14 @@
 "use client";
-import { ChangeEvent, useState } from "react";
+import Link from "next/link";
+import { ChangeEvent, FormEvent, useState } from "react";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { FaEyeSlash } from "react-icons/fa";
 import { LuEye } from "react-icons/lu";
+import { logUser } from "./services/auth";
 import { inputList } from "./utils/inputList";
-import Link from "next/link";
-
+import { useRouter } from "next/navigation";
+import { saveAuthToken } from "@/utils";
+import { saveLocalStorageToDosInDataBase } from "@/utils";
 interface RegisterFormData {
   email: string;
   password: string;
@@ -15,7 +19,9 @@ export default function Login() {
     email: "",
     password: "",
   });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hiddenPassword, setHiddenPassword] = useState(false);
+  const router = useRouter();
 
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -27,10 +33,25 @@ export default function Login() {
       };
     });
   };
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    logUser(registerInputData)
+      .then((res) => {
+        saveAuthToken(res.accessToken);
+        saveLocalStorageToDosInDataBase();
+        // router.back();
+      })
+      .catch((err) => console.log(err));
+    setIsLoading(false);
+  };
+
   return (
     <form
       className="flex flex-col p-7 max-w-3xl rounded-md gap-4 border border-white bg-[#1c1917] "
       method="dialog"
+      onSubmit={handleSubmit}
     >
       <h2 className="text-4xl font-bold text-white text-center ">
         Iniciar sesion
@@ -67,8 +88,13 @@ export default function Login() {
           </div>
         </div>
       ))}
-      <button className="p-4 bg-slate-400 rounded-md text-white md:m-auto md:px-10">
-        {" Iniciar sesión"}
+      <button className="p-4 active:bg-slate-700 bg-slate-400 rounded-md text-white md:m-auto md:px-10 relative flex justify-center items-center">
+        {isLoading ? "Cargando" : " Iniciar sesión"}
+        {isLoading && (
+          <span className="absolute animate-spin  text-xl">
+            <AiOutlineLoading3Quarters className="text-black" />
+          </span>
+        )}
       </button>
       <nav className="flex gap-2 text-white">
         ¿No tienes una cuenta?
