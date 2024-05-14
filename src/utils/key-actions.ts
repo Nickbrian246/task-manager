@@ -1,6 +1,6 @@
 import { MutableRefObject, SetStateAction } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { ToDo } from "@/app/page";
+import { ToDo } from "@prisma/client";
 import { handleUpdate, deleteToDo } from "./update-and-delete-to-do";
 import { checkCurrentToDoStatus } from "./utils";
 

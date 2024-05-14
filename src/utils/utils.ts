@@ -1,4 +1,4 @@
-import { ToDo } from "@/app/page";
+import { ToDo } from "@prisma/client";
 import { SetStateAction } from "react";
 interface CheckCurrentToDoStatus {
   index: number;
