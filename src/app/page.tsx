@@ -1,89 +1,55 @@
 "use client";
 
+import { defaultToDo } from "@/components/default-to-do/utils/default-to-do";
 import Header from "@/components/header/Header";
-import { handleDeleteKey, handleEnterKey } from "@/utils/key-actions";
+import Loading from "@/components/loading";
+import ToDoManager from "@/components/to-do-manager/to-do-manager";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { getToDos, putToDos } from "@/store/slices/to-dos/thunks";
+import { setToDos } from "@/store/slices/to-dos/to-dos.slice";
 import {
   getToDoSInLocalStorage,
   saveToDoSInLocalStorage,
 } from "@/utils/localstorage";
-import { handleUpdate } from "@/utils/update-and-delete-to-do";
-import { handleTaskStatus } from "@/utils/utils";
-import { Reorder, useDragControls } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
-import { BiGridVertical } from "react-icons/bi";
-import { v4 as uuidv4 } from "uuid";
 import { ToDo } from "@prisma/client";
+import { useDragControls } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
-  const [groupOfToDoS, setGroupOfToDoS] = useState<ToDo[]>([]);
+  const [groupOfToDoS, setGroupOfToDoS] = useState<ToDo[]>(defaultToDo);
   const groupOfToDoSRef = useRef<HTMLInputElement[]>([]);
   const [currentIndexPosition, setCurrentIndexPosition] = useState<number>(0);
   const controls = useDragControls();
+  const { isUserLogged, toDos } = useAppSelector((state) => state.sessionState);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (groupOfToDoS?.length === 0) {
-      const addDefaultToDo: ToDo[] = groupOfToDoS.concat({
-        name: "",
-        toDoId: uuidv4(),
-        status: false,
-        label:
-          "Escribe tu primer tarea y oprime la tecla Enter para la siguiente ;)",
-      });
-      setGroupOfToDoS(addDefaultToDo);
+    if (isUserLogged) {
+      dispatch(getToDos());
+    } else {
+      const localStorageToDos = getToDoSInLocalStorage();
+      localStorageToDos?.length > 1 &&
+        localStorageToDos[0].name.length > 1 &&
+        setToDos(localStorageToDos);
     }
-  }, [groupOfToDoS]);
+  }, [isUserLogged]);
 
   useEffect(() => {
-    const LocalstorageToDos = getToDoSInLocalStorage();
-
-    if (LocalstorageToDos && LocalstorageToDos[0].name.length > 0) {
-      setGroupOfToDoS(LocalstorageToDos);
-    }
-  }, []);
+    setGroupOfToDoS(toDos);
+  }, [toDos]);
 
   useEffect(() => {
     const debounce = setTimeout(() => {
-      saveToDoSInLocalStorage(groupOfToDoS);
-    }, 400);
+      if (isUserLogged) {
+        dispatch(putToDos(groupOfToDoS));
+      } else {
+        saveToDoSInLocalStorage(groupOfToDoS);
+      }
+    }, 3000);
     return () => {
       clearTimeout(debounce);
     };
   }, [groupOfToDoS]);
-
-  const addRefToElements = (ref: HTMLInputElement, index: number) => {
-    groupOfToDoSRef.current[index] = ref;
-  };
-
-  const handleToDoFocus = (currentToDoIndex: number) => {
-    setCurrentIndexPosition(currentToDoIndex);
-    setGroupOfToDoS((prev) => {
-      const newGroupOfToDos = prev.map((toDo, index) => {
-        return currentToDoIndex === index
-          ? {
-              ...toDo,
-              name: toDo.name.length >= 2 ? toDo.name : ``,
-              label: `Oprime la tecla " / " para abrir el menu de opciones`,
-            }
-          : toDo;
-      });
-      return newGroupOfToDos;
-    });
-  };
-
-  const handleToDoBlur = (currentToDoIndex: number) => {
-    setGroupOfToDoS((prev) => {
-      const newGroupOfToDos = prev.map((toDo, index) => {
-        return currentToDoIndex === index
-          ? {
-              ...toDo,
-              name: toDo.name.length >= 1 ? toDo.name : ` `,
-              label: "",
-            }
-          : toDo;
-      });
-      return newGroupOfToDos;
-    });
-  };
 
   return (
     <>
@@ -93,89 +59,17 @@ export default function Home() {
           <h1 className="text-7xl font-bold text-white text-center">
             Task Manager
           </h1>
-          <section className="md:max-w-screen-md w-full  p-2 flex flex-col gap-1 mt-5">
-            <Reorder.Group
-              axis="y"
-              values={groupOfToDoS}
-              onReorder={setGroupOfToDoS}
-            >
-              {groupOfToDoS.map((toDo, index) => (
-                <Reorder.Item key={toDo.toDoId} value={toDo}>
-                  <div
-                    key={toDo.toDoId}
-                    className="flex items-center justify-start p-1 bg-#1c1917  rounded-md gap-3"
-                  >
-                    <span
-                      onPointerDown={(e) => controls.start(e)}
-                      className="text-[#525252] scale-150 cursor-grabbing hover:text-[#e2e8f0] hover:bg-[#262626] rounded"
-                    >
-                      <BiGridVertical />
-                    </span>
-                    {
-                      // <span>{index}.</span>
-                    }
-
-                    <input
-                      checked={toDo.status}
-                      onChange={() => {
-                        handleTaskStatus({ id: toDo.toDoId, setGroupOfToDoS });
-                      }}
-                      type="checkbox"
-                      className="scale-125 "
-                    />
-                    <input
-                      onKeyDown={(e) => {
-                        handleDeleteKey({
-                          e,
-                          groupOfToDoS,
-                          groupOfToDoSRef,
-                          index,
-                          setGroupOfToDoS,
-                        });
-                      }}
-                      onBlur={() => {
-                        handleToDoBlur(index);
-                      }}
-                      onFocus={() => {
-                        handleToDoFocus(index);
-                      }}
-                      className={`
-                      px-1 
-                      py-1 
-                      w-full
-                      h-auto  
-                      outline-none 
-                      bg-[#1c1917] 
-                      text-white  ${
-                        toDo.status && "line-through text-zinc-400"
-                      }`}
-                      onChange={(e) => {
-                        handleUpdate({ e, index, setGroupOfToDoS });
-                      }}
-                      key={toDo.toDoId}
-                      value={toDo.name}
-                      placeholder={toDo.label ?? ""}
-                      onKeyUp={(e) =>
-                        handleEnterKey({
-                          e,
-                          currentIndexPosition,
-                          groupOfToDoS,
-                          groupOfToDoSRef,
-                          index,
-                          setGroupOfToDoS,
-                        })
-                      }
-                      ref={(ref) => {
-                        if (ref) addRefToElements(ref, index);
-                      }}
-                    />
-                  </div>
-                </Reorder.Item>
-              ))}
-            </Reorder.Group>
-          </section>
+          <ToDoManager
+            controls={controls}
+            currentIndexPosition={currentIndexPosition}
+            groupOfToDoS={groupOfToDoS}
+            groupOfToDoSRef={groupOfToDoSRef}
+            setCurrentIndexPosition={setCurrentIndexPosition}
+            setGroupOfToDoS={setGroupOfToDoS}
+          />
         </section>
       </section>
+      <Loading />
     </>
   );
 }

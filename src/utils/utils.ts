@@ -25,3 +25,23 @@ export const handleTaskStatus = ({ id, setGroupOfToDoS }: HandleTaskStatus) => {
     return newGroupOfToDos;
   });
 };
+
+export const updateToDoLabel = (index: number): string => {
+  return index === 0
+    ? `Escribe tu primer tarea y oprime la tecla Enter para la siguiente ;)`
+    : `Oprime la tecla " / " para abrir el menu de opciones`;
+};
+
+export const updateNameWhiteSpaceOnBlur = (
+  index: number,
+  name: string
+): string => {
+  if (name.length >= 1) {
+    return name;
+  }
+  return index === 0 ? `` : ` `;
+};
+
+export const updateNameWhiteSpaceOnFocus = (name: string): string => {
+  return name.length >= 2 ? name : ``;
+};

@@ -15,8 +15,21 @@ export async function PUT(request: Request, response: Response) {
       data: { ToDos: toDosData },
     });
 
-    return Response.json({ data: ToDos });
+    return Response.json({ data: { toDos: ToDos } });
   } catch (error) {
     console.log(error);
   }
+}
+
+export async function GET(request: Request) {
+  try {
+    const userDecoded = request.headers.get("user-credentials") as string;
+    const { userId } = JSON.parse(userDecoded);
+
+    const { ToDos } = await prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+    });
+
+    return Response.json({ data: { toDos: ToDos } });
+  } catch (error) {}
 }

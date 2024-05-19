@@ -1,32 +1,35 @@
 "use client";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { logUser, putToDos } from "@/store/slices/to-dos/thunks";
+import { deleteToDosInLocalStorage, getToDoSInLocalStorage } from "@/utils";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { FaEyeSlash } from "react-icons/fa";
 import { LuEye } from "react-icons/lu";
-import { logUser } from "./services/auth";
+import { AuthLogin } from "./interfaces/inputList";
 import { inputList } from "./utils/inputList";
-import { useRouter } from "next/navigation";
-import { saveAuthToken } from "@/utils";
-import { saveLocalStorageToDosInDataBase } from "@/utils";
+
 interface RegisterFormData {
   email: string;
   password: string;
 }
 
 export default function Login() {
-  const [registerInputData, setRegisterInputData] = useState<RegisterFormData>({
+  const [userLogData, setUserLogData] = useState<AuthLogin>({
     email: "",
     password: "",
   });
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hiddenPassword, setHiddenPassword] = useState(false);
+  const dispatch = useAppDispatch();
+  const { isLoading } = useAppSelector((state) => state.sessionState);
   const router = useRouter();
 
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const name = e.target.name;
-    setRegisterInputData((prev) => {
+    setUserLogData((prev) => {
       return {
         ...prev,
         [name]: value,
@@ -36,15 +39,9 @@ export default function Login() {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
-    logUser(registerInputData)
-      .then((res) => {
-        saveAuthToken(res.accessToken);
-        saveLocalStorageToDosInDataBase();
-        // router.back();
-      })
-      .catch((err) => console.log(err));
-    setIsLoading(false);
+
+    dispatch(logUser(userLogData));
+    router.back();
   };
 
   return (

@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
   const token = await signJwt({ email: user.email, userId: user.id });
 
   return NextResponse.json(
-    { toDos: user.ToDos, accessToken: token },
+    { data: { toDos: user.ToDos }, metaData: { accessToken: token } },
     { status: 200 }
   );
 }

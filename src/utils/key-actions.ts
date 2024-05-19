@@ -89,6 +89,7 @@ export const handleDeleteKey = ({
   setGroupOfToDoS,
   groupOfToDoSRef,
 }: handleDeleteKey) => {
+  if (index === 0) return;
   if (e.key === "Delete" || e.key === "Del" || e.key === "Backspace") {
     if (checkCurrentToDoStatus({ groupOfToDoS, index }).name.length === 0) {
       deleteToDo({ index, setGroupOfToDoS });

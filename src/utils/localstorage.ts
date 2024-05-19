@@ -12,12 +12,20 @@ export function deleteEntityInLocalStorage(entityName: string) {
   return localStorage.removeItem(entityName);
 }
 
+export function deleteToDosInLocalStorage() {
+  localStorage.removeItem("todo");
+}
+
 export function saveAuthToken(accessToken: string) {
   localStorage.setItem("authToken", accessToken);
 }
 
 export function getAuthToken(): string | null {
   return localStorage.getItem("authToken");
+}
+
+export function deleteAuthToken() {
+  return localStorage.removeItem("authToken");
 }
 
 //todo limpiar localstorage una vez se hayan guardado correctamente los todos
