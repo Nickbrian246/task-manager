@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { getToDos, putToDos } from "@/store/slices/to-dos/thunks";
 import { setToDos } from "@/store/slices/to-dos/to-dos.slice";
 import {
+  deleteToDosInLocalStorage,
   getToDoSInLocalStorage,
   saveToDoSInLocalStorage,
 } from "@/utils/localstorage";
@@ -28,14 +29,28 @@ export default function Home() {
       dispatch(getToDos());
     } else {
       const localStorageToDos = getToDoSInLocalStorage();
-      localStorageToDos?.length > 1 &&
-        localStorageToDos[0].name.length > 1 &&
-        setToDos(localStorageToDos);
+      localStorageToDos && localStorageToDos.length >= 1
+        ? dispatch(setToDos(localStorageToDos))
+        : dispatch(setToDos(defaultToDo));
     }
   }, [isUserLogged]);
 
   useEffect(() => {
-    setGroupOfToDoS(toDos);
+    const localToDos = getToDoSInLocalStorage();
+
+    if (toDos.length > 0) {
+      if (
+        localToDos &&
+        localToDos?.length >= 1 &&
+        isUserLogged &&
+        localToDos[0].name.length >= 1
+      ) {
+        setGroupOfToDoS(() => toDos.concat(localToDos));
+        deleteToDosInLocalStorage();
+      } else {
+        setGroupOfToDoS(toDos);
+      }
+    }
   }, [toDos]);
 
   useEffect(() => {

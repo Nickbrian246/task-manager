@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 const Loading = () => {
-  const { isLoading } = useAppSelector((state) => state.sessionState);
+  const { isLoading, loadingMessage } = useAppSelector(
+    (state) => state.sessionState
+  );
   const [loader, setLoader] = useState<boolean>(false);
 
   useEffect(() => {
@@ -13,7 +15,7 @@ const Loading = () => {
     } else {
       const debounce = setTimeout(() => {
         setLoader(false);
-      }, 2000);
+      }, 1000);
       return () => clearTimeout(debounce);
     }
   }, [isLoading]);
@@ -24,7 +26,7 @@ const Loading = () => {
         <div className="animate-spin text-white text-3xl">
           <AiOutlineLoading3Quarters />
         </div>
-        <p className="text-slate-400">{isLoading ? "Guardando" : "Guardado"}</p>
+        <p className="text-slate-400">{loadingMessage}</p>
       </section>
     )
   );

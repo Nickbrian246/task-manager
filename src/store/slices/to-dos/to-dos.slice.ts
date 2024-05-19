@@ -6,12 +6,14 @@ import { getAuthToken, deleteAuthToken } from "@/utils";
 
 interface SessionState {
   isLoading: boolean;
+  loadingMessage: string;
   isUserLogged: boolean;
   toDos: ToDo[];
 }
 
 const initialState: SessionState = {
   isLoading: false,
+  loadingMessage: "",
   isUserLogged: !!getAuthToken(),
   toDos: [],
 };
@@ -43,6 +45,7 @@ const toDos = createSlice({
 
     builder.addCase(getToDos.pending, (state) => {
       state.isLoading = true;
+      state.loadingMessage = "Cargando To Dos.";
     });
     builder.addCase(getToDos.fulfilled, (state, { payload }) => {
       state.toDos = payload.data.toDos;
@@ -54,6 +57,7 @@ const toDos = createSlice({
 
     builder.addCase(putToDos.pending, (state) => {
       state.isLoading = true;
+      state.loadingMessage = "Guardando";
     });
     builder.addCase(putToDos.fulfilled, (state) => {
       state.isLoading = false;

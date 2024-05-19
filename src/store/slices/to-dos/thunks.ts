@@ -2,7 +2,11 @@ import {
   AuthLogin,
   AuthRegister,
 } from "@/components/auth/login/interfaces/inputList";
-import { getAuthToken, getToDoSInLocalStorage } from "@/utils";
+import {
+  deleteToDosInLocalStorage,
+  getAuthToken,
+  getToDoSInLocalStorage,
+} from "@/utils";
 import { ToDo } from "@prisma/client";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import {
@@ -72,12 +76,6 @@ export const logUser = createAsyncThunk<
         body: JSON.stringify(user),
       });
       const res = await req.json();
-      const localToDos = getToDoSInLocalStorage();
-
-      if (localToDos.length > 0) {
-        const mergeToDos: ToDo[] = [...localToDos, ...res.data.toDos];
-        dispatch(putToDos(mergeToDos));
-      }
 
       return fulfillWithValue(res);
     } catch (error) {
