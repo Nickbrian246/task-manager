@@ -1,3 +1,4 @@
+"use client";
 import { BiGridVertical } from "react-icons/bi";
 import { defaultToDo } from "./utils/default-to-do";
 import { SetStateAction } from "react";

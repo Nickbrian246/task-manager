@@ -1,3 +1,4 @@
+"use client";
 interface Props {
   isWriting: boolean;
   isLengthCorrect: boolean;

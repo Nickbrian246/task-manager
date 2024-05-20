@@ -1,3 +1,4 @@
+"use client";
 import { ToDo } from "@prisma/client";
 import { createSlice } from "@reduxjs/toolkit";
 import { logUser, putToDos, getToDos, registerUser } from "./thunks";

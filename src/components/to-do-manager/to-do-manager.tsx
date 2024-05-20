@@ -1,3 +1,4 @@
+"use client";
 import { handleDeleteKey, handleEnterKey } from "@/utils/key-actions";
 import { handleUpdate } from "@/utils/update-and-delete-to-do";
 import {

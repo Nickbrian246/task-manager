@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import Modal from "@/components/modal";
 import RegisterModule from "@/components/auth/register";
