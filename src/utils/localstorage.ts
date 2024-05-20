@@ -1,3 +1,4 @@
+"use client";
 import { ToDo } from "@prisma/client";
 import { Auth } from "@/interfaces/auth";
 import { putToDos } from "@/services/to-do-s/to-do";

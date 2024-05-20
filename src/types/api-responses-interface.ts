@@ -22,3 +22,7 @@ export interface AuthMetaData {
 export interface ResponseData {
   toDos: ToDo[];
 }
+
+export interface RegisterResponseData {
+  accessToken: string;
+}

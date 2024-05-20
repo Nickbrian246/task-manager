@@ -14,7 +14,9 @@ import {
   ApiSuccessResponse,
   AuthMetaData,
   ResponseData,
+  RegisterResponseData,
 } from "@/types/api-responses-interface";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const putToDos = createAsyncThunk<
   ApiSuccessResponseNoMetaData<ResponseData>,
@@ -25,7 +27,7 @@ export const putToDos = createAsyncThunk<
 >("putToDos/putToDos", async (toDos, { rejectWithValue, fulfillWithValue }) => {
   const token = getAuthToken();
   try {
-    const response = await fetch("http://localhost:3000/api/todo-task", {
+    const response = await fetch(`${BASE_URL}/todo-task`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -47,7 +49,7 @@ export const getToDos = createAsyncThunk<
 >("getToDos", async (_, { fulfillWithValue, rejectWithValue }) => {
   try {
     const token = getAuthToken();
-    const response = await fetch("http://localhost:3000/api/todo-task", {
+    const response = await fetch(`${BASE_URL}/todo-task`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -68,7 +70,7 @@ export const logUser = createAsyncThunk<
   "logUser/logUser",
   async (user, { fulfillWithValue, dispatch, rejectWithValue }) => {
     try {
-      const req = await fetch("http://localhost:3000/api/auth/signin", {
+      const req = await fetch(`${BASE_URL}/auth/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -85,11 +87,14 @@ export const logUser = createAsyncThunk<
   }
 );
 
-export const registerUser = createAsyncThunk<AuthRegister, ToDo[]>(
+export const registerUser = createAsyncThunk<
+  ApiSuccessResponseNoMetaData<RegisterResponseData>,
+  AuthRegister
+>(
   "registerUser/registerUser",
   async (authRegisterData, { fulfillWithValue }) => {
     try {
-      const res = await fetch("http://localhost:3000/api/auth/signup", {
+      const res = await fetch(`${BASE_URL}/auth/singup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

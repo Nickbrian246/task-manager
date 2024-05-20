@@ -1,6 +1,6 @@
 import { ToDo } from "@prisma/client";
 import { createSlice } from "@reduxjs/toolkit";
-import { logUser, putToDos, getToDos } from "./thunks";
+import { logUser, putToDos, getToDos, registerUser } from "./thunks";
 import { saveAuthToken } from "@/utils";
 import { getAuthToken, deleteAuthToken } from "@/utils";
 
@@ -37,9 +37,23 @@ const toDos = createSlice({
     });
     builder.addCase(logUser.fulfilled, (state, { payload }) => {
       state.isUserLogged = true;
+      state.isLoading = false;
       saveAuthToken(payload.metaData.accessToken);
     });
     builder.addCase(logUser.rejected, (state) => {
+      state.isLoading = false;
+    });
+
+    builder.addCase(registerUser.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(registerUser.fulfilled, (state, { payload }) => {
+      state.isLoading = false;
+      state.isUserLogged = true;
+
+      saveAuthToken(payload.data.accessToken);
+    });
+    builder.addCase(registerUser.rejected, (state) => {
       state.isLoading = false;
     });
 
