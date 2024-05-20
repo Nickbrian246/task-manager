@@ -2,12 +2,16 @@
 import Link from "next/link";
 import React from "react";
 import { useAppSelector, useAppDispatch } from "@/hooks/redux";
-import { logout } from "@/store/slices/to-dos/to-dos.slice";
+import { isLoggedStatus, logout } from "@/store/slices/to-dos/to-dos.slice";
 import { IoIosLogOut, IoIosLogIn } from "react-icons/io";
+import { useEffectOnce } from "react-use";
 
 export default function Header() {
   const dispatch = useAppDispatch();
   const { isUserLogged } = useAppSelector((state) => state.sessionState);
+  useEffectOnce(() => {
+    dispatch(isLoggedStatus());
+  });
   return (
     <header className="flex w-full p-4 justify-end">
       <nav className="flex gap-8 text-slate-400">

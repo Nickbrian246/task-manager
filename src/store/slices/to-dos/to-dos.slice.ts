@@ -15,7 +15,7 @@ interface SessionState {
 const initialState: SessionState = {
   isLoading: false,
   loadingMessage: "",
-  isUserLogged: !!getAuthToken(),
+  isUserLogged: false,
   toDos: [],
 };
 
@@ -30,6 +30,9 @@ const toDos = createSlice({
     },
     setToDos: (state, { payload }) => {
       state.toDos = payload;
+    },
+    isLoggedStatus: (state) => {
+      state.isUserLogged = !!getAuthToken();
     },
   },
   extraReducers: (builder) => {
@@ -83,6 +86,6 @@ const toDos = createSlice({
   },
 });
 
-export const { logout, setToDos } = toDos.actions;
+export const { logout, setToDos, isLoggedStatus } = toDos.actions;
 
 export default toDos.reducer;
