@@ -6,21 +6,20 @@ import { useValidatePassword } from "@/hooks/useValidatePassword";
 import { FaEyeSlash } from "react-icons/fa";
 import { LuEye } from "react-icons/lu";
 import Link from "next/link";
-interface RegisterFormData {
-  name: string;
-  lastName: string;
-  email: string;
-  password: string;
-}
+import { useAppDispatch } from "@/hooks/redux";
+import { registerUser } from "@/store/slices/to-dos/thunks";
+import { AuthRegister } from "../login/interfaces/inputList";
+
 export default function Register() {
-  const [registerInputData, setRegisterInputData] = useState<RegisterFormData>({
+  const dispatch = useAppDispatch();
+  const [registerInputData, setRegisterInputData] = useState<AuthRegister>({
     email: "",
-    lastName: "",
+    familyName: "",
     name: "",
     password: "",
   });
   const [isWriting, setIsWriting] = useState(false);
-  const [hiddePassword, setHiddenPassword] = useState(false);
+  const [isHidePassword, setIsHidePassword] = useState(false);
 
   const {
     atLeastOneUppercase,
@@ -44,10 +43,16 @@ export default function Register() {
       };
     });
   };
+
+  const handleSubmitButton: React.FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault();
+    dispatch(registerUser(registerInputData));
+  };
   return (
     <form
       className="flex flex-col p-7 max-w-3xl gap-2 bg-[#1c1917]  border border-white rounded-md z-20  "
       method="dialog"
+      onSubmit={handleSubmitButton}
     >
       <h2 className="text-4xl font-bold text-white text-center ">Registrate</h2>
       {inputList.map((inputData) => (
@@ -58,7 +63,7 @@ export default function Register() {
           <div className="w-full flex items-center justify-center">
             <input
               type={
-                inputData.id === "password" && !hiddePassword
+                inputData.id === "password" && !isHidePassword
                   ? "password"
                   : "text"
               }
@@ -70,13 +75,13 @@ export default function Register() {
             />
             {inputData.id === "password" && (
               <span
-                title={hiddePassword ? "Ocultar contraseña" : "Ver contraseña"}
+                title={isHidePassword ? "Ocultar contraseña" : "Ver contraseña"}
                 onClick={() => {
-                  setHiddenPassword((prev) => !prev);
+                  setIsHidePassword((prev) => !prev);
                 }}
                 className="text-white text-2xl ml-2 "
               >
-                {hiddePassword ? <LuEye /> : <FaEyeSlash />}
+                {isHidePassword ? <LuEye /> : <FaEyeSlash />}
               </span>
             )}
           </div>

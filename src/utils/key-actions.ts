@@ -1,6 +1,6 @@
 import { MutableRefObject, SetStateAction } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { ToDo } from "@/app/page";
+import { ToDo } from "@prisma/client";
 import { handleUpdate, deleteToDo } from "./update-and-delete-to-do";
 import { checkCurrentToDoStatus } from "./utils";
 
@@ -89,6 +89,7 @@ export const handleDeleteKey = ({
   setGroupOfToDoS,
   groupOfToDoSRef,
 }: handleDeleteKey) => {
+  if (index === 0) return;
   if (e.key === "Delete" || e.key === "Del" || e.key === "Backspace") {
     if (checkCurrentToDoStatus({ groupOfToDoS, index }).name.length === 0) {
       deleteToDo({ index, setGroupOfToDoS });

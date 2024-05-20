@@ -1,9 +1,15 @@
 "use client";
-import { ChangeEvent, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { logUser, putToDos } from "@/store/slices/to-dos/thunks";
+import { deleteToDosInLocalStorage, getToDoSInLocalStorage } from "@/utils";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { ChangeEvent, FormEvent, useState } from "react";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { FaEyeSlash } from "react-icons/fa";
 import { LuEye } from "react-icons/lu";
+import { AuthLogin } from "./interfaces/inputList";
 import { inputList } from "./utils/inputList";
-import Link from "next/link";
 
 interface RegisterFormData {
   email: string;
@@ -11,26 +17,38 @@ interface RegisterFormData {
 }
 
 export default function Login() {
-  const [registerInputData, setRegisterInputData] = useState<RegisterFormData>({
+  const [userLogData, setUserLogData] = useState<AuthLogin>({
     email: "",
     password: "",
   });
   const [hiddenPassword, setHiddenPassword] = useState(false);
+  const dispatch = useAppDispatch();
+  const { isLoading } = useAppSelector((state) => state.sessionState);
+  const router = useRouter();
 
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const name = e.target.name;
-    setRegisterInputData((prev) => {
+    setUserLogData((prev) => {
       return {
         ...prev,
         [name]: value,
       };
     });
   };
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    dispatch(logUser(userLogData));
+    router.back();
+  };
+
   return (
     <form
       className="flex flex-col p-7 max-w-3xl rounded-md gap-4 border border-white bg-[#1c1917] "
       method="dialog"
+      onSubmit={handleSubmit}
     >
       <h2 className="text-4xl font-bold text-white text-center ">
         Iniciar sesion
@@ -67,8 +85,13 @@ export default function Login() {
           </div>
         </div>
       ))}
-      <button className="p-4 bg-slate-400 rounded-md text-white md:m-auto md:px-10">
-        {" Iniciar sesión"}
+      <button className="p-4 active:bg-slate-700 bg-slate-400 rounded-md text-white md:m-auto md:px-10 relative flex justify-center items-center">
+        {isLoading ? "Cargando" : " Iniciar sesión"}
+        {isLoading && (
+          <span className="absolute animate-spin  text-xl">
+            <AiOutlineLoading3Quarters className="text-black" />
+          </span>
+        )}
       </button>
       <nav className="flex gap-2 text-white">
         ¿No tienes una cuenta?

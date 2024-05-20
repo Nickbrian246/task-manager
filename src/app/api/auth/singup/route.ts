@@ -14,5 +14,12 @@ export async function POST(req: NextRequest) {
   const response = await prisma.user.create({ data });
 
   const token = await signJwt({ email: User.email, userId: response.id });
-  return NextResponse.json({ acessToken: token }, { status: 200 });
+  return NextResponse.json(
+    {
+      data: {
+        accessToken: token,
+      },
+    },
+    { status: 200 }
+  );
 }

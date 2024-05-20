@@ -9,7 +9,7 @@ export const inputList: InputList[] = [
   {
     name: "Apellido",
     label: "Apellido",
-    id: "lastName",
+    id: "familyName",
   },
   {
     name: "Correo",

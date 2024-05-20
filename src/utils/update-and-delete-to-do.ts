@@ -1,5 +1,5 @@
 import { ChangeEvent, SetStateAction } from "react";
-import { ToDo } from "@/app/page";
+import { ToDo } from "@prisma/client";
 
 interface DeleteToDo {
   index: number;
