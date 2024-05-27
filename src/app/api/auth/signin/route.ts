@@ -1,6 +1,6 @@
+import { UserCredentialsSchema } from "@/validarions/auth/user";
+import { verify } from "argon2";
 import { NextRequest, NextResponse } from "next/server";
-import { UserSchema, UserCredentialsSchema } from "@/validarions/auth/user";
-import { hash, verify } from "argon2";
 import prisma from "../../../../../prisma";
 import { signJwt } from "../_utils/signAuth";
 

@@ -6,6 +6,8 @@ export async function PUT(request: Request, response: Response) {
     const toDos = await request.json();
 
     const userCredentials = request.headers.get("user-credentials") as string;
+    console.log(userCredentials);
+
     const { userId } = JSON.parse(userCredentials);
 
     const toDosData = ToDoSSchema.parse(toDos);

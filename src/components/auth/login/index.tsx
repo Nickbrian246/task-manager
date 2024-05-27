@@ -1,7 +1,6 @@
 "use client";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
-import { logUser, putToDos } from "@/store/slices/to-dos/thunks";
-import { deleteToDosInLocalStorage, getToDoSInLocalStorage } from "@/utils";
+import { logUser } from "@/store/slices/to-dos/thunks";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useState } from "react";
@@ -10,11 +9,7 @@ import { FaEyeSlash } from "react-icons/fa";
 import { LuEye } from "react-icons/lu";
 import { AuthLogin } from "./interfaces/inputList";
 import { inputList } from "./utils/inputList";
-
-interface RegisterFormData {
-  email: string;
-  password: string;
-}
+import GoogleAuthButton from "../components/google";
 
 export default function Login() {
   const [userLogData, setUserLogData] = useState<AuthLogin>({
@@ -103,6 +98,7 @@ export default function Login() {
           Regístrate{" "}
         </Link>
       </nav>
+      <GoogleAuthButton title="Iniciar session" />
     </form>
   );
 }
