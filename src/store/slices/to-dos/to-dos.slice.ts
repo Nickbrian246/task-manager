@@ -4,6 +4,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { logUser, putToDos, getToDos, registerUser } from "./thunks";
 import { saveAuthToken } from "@/utils";
 import { getAuthToken, deleteAuthToken } from "@/utils";
+import { signOut } from "next-auth/react";
 
 interface SessionState {
   isLoading: boolean;
@@ -24,15 +25,14 @@ const toDos = createSlice({
   initialState,
   reducers: {
     logout: (state) => {
-      deleteAuthToken();
       state.isUserLogged = false;
       state.toDos = [];
     },
     setToDos: (state, { payload }) => {
       state.toDos = payload;
     },
-    isLoggedStatus: (state) => {
-      state.isUserLogged = !!getAuthToken();
+    isLoggedStatus: (state, { payload }) => {
+      state.isUserLogged = payload as boolean;
     },
   },
   extraReducers: (builder) => {

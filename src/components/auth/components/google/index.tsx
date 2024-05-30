@@ -1,22 +1,15 @@
+import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
-import { signIn, useSession } from "next-auth/react";
-import { useEffectOnce } from "react-use";
-import { saveAuthToken } from "@/utils";
-
+import { useRouter } from "next/navigation";
 interface Props {
   title: string;
 }
 const GoogleAuthButton = ({ title }: Props) => {
-  const { data, status } = useSession();
-  const handleBtn = () => {
-    signIn("google");
+  const router = useRouter();
+  const handleBtn = async () => {
+    await signIn("google");
+    router.back();
   };
-  console.log({ data: data?.access_token, status }, "soy session ");
-  useEffectOnce(() => {
-    if (data?.access_token) {
-      saveAuthToken(data.access_token);
-    }
-  });
   return (
     <button
       onClick={handleBtn}

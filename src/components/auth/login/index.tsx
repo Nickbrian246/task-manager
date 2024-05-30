@@ -10,6 +10,7 @@ import { LuEye } from "react-icons/lu";
 import { AuthLogin } from "./interfaces/inputList";
 import { inputList } from "./utils/inputList";
 import GoogleAuthButton from "../components/google";
+import { signIn } from "next-auth/react";
 
 export default function Login() {
   const [userLogData, setUserLogData] = useState<AuthLogin>({
@@ -32,11 +33,12 @@ export default function Login() {
     });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    dispatch(logUser(userLogData));
-    router.back();
+    await signIn("sign-in", {
+      email: userLogData.email,
+      password: userLogData.password,
+    });
   };
 
   return (

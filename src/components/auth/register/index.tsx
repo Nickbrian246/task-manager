@@ -1,17 +1,19 @@
 "use client";
-import React, { ChangeEvent, useState } from "react";
-import { inputList } from "./utils/inputList";
 import { PasswordRules } from "@/components/passwordRules/password-rules";
+import { useAppDispatch } from "@/hooks/redux";
 import { useValidatePassword } from "@/hooks/useValidatePassword";
+import { signIn } from "next-auth/react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import React, { ChangeEvent, useState } from "react";
 import { FaEyeSlash } from "react-icons/fa";
 import { LuEye } from "react-icons/lu";
-import Link from "next/link";
-import { useAppDispatch } from "@/hooks/redux";
-import { registerUser } from "@/store/slices/to-dos/thunks";
 import { AuthRegister } from "../login/interfaces/inputList";
+import { inputList } from "./utils/inputList";
 
 export default function Register() {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const [registerInputData, setRegisterInputData] = useState<AuthRegister>({
     email: "",
     familyName: "",
@@ -44,9 +46,12 @@ export default function Register() {
     });
   };
 
-  const handleSubmitButton: React.FormEventHandler<HTMLFormElement> = (e) => {
+  const handleSubmitButton: React.FormEventHandler<HTMLFormElement> = async (
+    e
+  ) => {
     e.preventDefault();
-    dispatch(registerUser(registerInputData));
+    // dispatch(registerUser(registerInputData));
+    await signIn("register", { ...registerInputData });
   };
   return (
     <form

@@ -2,13 +2,9 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifyToken } from "./app/api/auth/_utils/signAuth";
 
-const secretKey = process.env.SECRET_WORD;
 export async function middleware(request: NextRequest) {
   try {
-    const token = request.headers
-      .get("authorization")
-      ?.split(" ")
-      .pop() as string;
+    const token = request.headers.get("Cookie")?.split(" ").pop() as string;
 
     const decodedUser = await verifyToken(token);
 
