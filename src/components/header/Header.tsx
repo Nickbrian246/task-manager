@@ -9,7 +9,7 @@ import { useUserSessionStatus } from "@/hooks/use-session/use-session";
 import { useEffect } from "react";
 
 export default function Header() {
-  const { data } = useSession();
+  const { data, status } = useSession();
   const dispatch = useAppDispatch();
   const { isUserLogged } = useAppSelector((state) => state.sessionState);
 

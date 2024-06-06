@@ -1,11 +1,12 @@
-import GoogleProvider from "next-auth/providers/google";
+import { UserSchema } from "@/validarions/auth/user";
+import { hash, verify } from "argon2";
 import NextAuth from "next-auth/next";
+import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import prisma from "../../../../../prisma";
 import { signJwt } from "../_utils/signAuth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { hash, verify } from "argon2";
-import { AuthRegister } from "@/components/auth/login/interfaces/inputList";
-import { UserSchema } from "@/validarions/auth/user";
+import { SigninController } from "./_controllers/signin";
+import { registerController } from "./_controllers/register";
 const handler = NextAuth({
   session: {
     strategy: "jwt",
@@ -25,21 +26,9 @@ const handler = NextAuth({
         familyName: { label: "LastName", type: "text" },
       },
       async authorize(credentials, req) {
-        if (credentials) {
-          const hashedPassword = await hash(credentials.password);
-
-          const data = UserSchema.parse({
-            ...credentials,
-            password: hashedPassword,
-          });
-
-          const { id, email, name } = await prisma.user.create({
-            data,
-          });
-
-          return { id, name, email };
-        }
-
+        if (!credentials) return null;
+        const user = await registerController(credentials);
+        if (user) return user;
         return null;
       },
     }),
@@ -53,24 +42,9 @@ const handler = NextAuth({
       async authorize(credentials, req) {
         if (!credentials) return null;
         const { email, password } = credentials;
-        if (email && password) {
-          const user = await prisma.user.findFirst({
-            where: { email },
-          });
-          if (user?.password) {
-            const validatePassword = await verify(user.password, password);
-            const token = await signJwt({ email, userId: user.id });
-            if (validatePassword)
-              return {
-                id: user.id,
-                email: user.email,
-                name: user.name,
-                accessToken: token,
-                toDos: user.ToDos,
-              };
-          }
-        }
-
+        if (!email && !password) return null;
+        const user = await SigninController(email, password);
+        if (user) return user;
         return null;
       },
     }),
