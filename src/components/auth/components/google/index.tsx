@@ -7,7 +7,7 @@ interface Props {
 const GoogleAuthButton = ({ title }: Props) => {
   const router = useRouter();
   const handleBtn = async () => {
-    await signIn("google");
+    await signIn("google", { redirect: false });
     router.back();
   };
   return (

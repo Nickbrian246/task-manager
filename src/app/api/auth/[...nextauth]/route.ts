@@ -1,12 +1,15 @@
-import { UserSchema } from "@/validarions/auth/user";
-import { hash, verify } from "argon2";
+import { Profile } from "next-auth";
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import prisma from "../../../../../prisma";
-import { signJwt } from "../_utils/signAuth";
-import { SigninController } from "./_controllers/signin";
 import { registerController } from "./_controllers/register";
+import { SigninController } from "./_controllers/signin";
+interface CustomProfile extends Profile {
+  family_name: string;
+  given_name: string;
+  email: string;
+}
 const handler = NextAuth({
   session: {
     strategy: "jwt",
@@ -39,7 +42,7 @@ const handler = NextAuth({
         email: { label: "Username", type: "text", placeholder: "jsmith" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         if (!credentials) return null;
         const { email, password } = credentials;
         if (!email && !password) return null;
@@ -54,18 +57,23 @@ const handler = NextAuth({
     }),
   ],
   callbacks: {
-    async signIn({ account, profile, user }) {
-      if (profile) {
+    async signIn({ profile }) {
+      console.log(profile);
+
+      const customProfile = profile as CustomProfile;
+      if (customProfile) {
+        console.log(customProfile);
+
         try {
           await prisma.user.upsert({
             where: { email: profile?.email },
             update: {
-              name: profile.name,
+              name: customProfile.name,
             },
             create: {
-              email: profile?.email,
-              familyName: profile?.family_name,
-              name: profile?.given_name,
+              email: customProfile.email,
+              familyName: customProfile.family_name,
+              name: customProfile.given_name,
               origin: "GOOGLE",
             },
           });
@@ -76,28 +84,6 @@ const handler = NextAuth({
 
       return true;
     },
-    async session({ session, token }) {
-      if (session && token.email) {
-        const user = await prisma.user.findFirst({
-          where: { email: token.email },
-        });
-
-        const customToken = await signJwt({
-          email: user?.email,
-          userId: user?.id,
-        });
-        session.access_token = customToken;
-        return session;
-      }
-      return session;
-    },
-    async redirect({ url, baseUrl }) {
-      return baseUrl;
-    },
-  },
-  pages: {
-    signIn: "http://localhost:3000/",
-    signOut: "http://localhost:3000/",
   },
 });
 
