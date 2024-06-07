@@ -1,17 +1,24 @@
 import prisma from "../../../../prisma";
 import { ToDoSSchema } from "@/validarions/todo-task/indes";
-
+import { decode } from "next-auth/jwt";
+interface JWT {
+  email: string;
+}
 export async function PUT(request: Request, response: Response) {
   try {
     const toDos = await request.json();
 
-    const userCredentials = request.headers.get("user-credentials") as string;
-    const { userId } = JSON.parse(userCredentials);
+    const token = request.headers.get("Cookie") as string;
+
+    const { email } = (await decode({
+      token: token.split("=").pop(),
+      secret: process.env.NEXTAUTH_SECRET as string,
+    })) as JWT;
 
     const toDosData = ToDoSSchema.parse(toDos);
 
     const { ToDos } = await prisma.user.update({
-      where: { id: userId },
+      where: { email },
       data: { ToDos: toDosData },
     });
 
@@ -23,11 +30,15 @@ export async function PUT(request: Request, response: Response) {
 
 export async function GET(request: Request) {
   try {
-    const userDecoded = request.headers.get("user-credentials") as string;
-    const { userId } = JSON.parse(userDecoded);
+    const token = request.headers.get("Cookie") as string;
+
+    const { email } = (await decode({
+      token: token.split("=").pop(),
+      secret: process.env.NEXTAUTH_SECRET as string,
+    })) as JWT;
 
     const { ToDos } = await prisma.user.findUniqueOrThrow({
-      where: { id: userId },
+      where: { email },
     });
 
     return Response.json({ data: { toDos: ToDos } });
