@@ -123,7 +123,7 @@ export default function Login() {
           Regístrate{" "}
         </Link>
       </nav>
-      <GoogleAuthButton title="Iniciar session" />
+      <GoogleAuthButton title="Iniciar sesión con Google" />
     </form>
   );
 }

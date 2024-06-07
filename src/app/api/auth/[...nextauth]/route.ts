@@ -57,13 +57,9 @@ const handler = NextAuth({
     }),
   ],
   callbacks: {
-    async signIn({ profile }) {
-      console.log(profile);
-
+    async signIn({ profile, account, user, credentials, email }) {
       const customProfile = profile as CustomProfile;
       if (customProfile) {
-        console.log(customProfile);
-
         try {
           await prisma.user.upsert({
             where: { email: profile?.email },
