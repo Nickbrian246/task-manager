@@ -13,17 +13,30 @@ enum Origin {
 }
 
 model User {
-  id         String  @id @default(auto()) @map("_id") @db.ObjectId
-  name       String
-  familyName String
-  email      String  @unique
-  password   String?
-  origin     Origin  @default(OWN)
-  ToDos      ToDo[]
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  name              String
+  familyName        String
+  email             String    @unique
+  password          String?
+  origin            Origin    @default(OWN)
+  ToDos             ToDo[]
+  validatationToken Token?
+  isEmailVerified   Boolean   @default(false)
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+}
+
+model Token {
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  token        String
+  tries        Int         @default(0) 
+  user         User        @relation(fields: [userId], references: [id])
+  userId       String      @unique @db.ObjectId
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  deletedAt    DateTime?
 }
 
 type ToDo {
